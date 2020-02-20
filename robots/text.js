@@ -1,6 +1,10 @@
 const algorithmia = require('algorithmia')
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
 const sentenceBoundaryDetection = require('sbd')
+
+const watsonApiKey = require('../credentials/watson-nlu.json').apiKey
+const NaturalLanguageUnderstandingV1 = require('@ibm-watson/natural-language-understanding-nodejs')
+
 async function robot(content) {
 	await fetchContentFromWikipedia(content)
 	senitizeContent(content)
