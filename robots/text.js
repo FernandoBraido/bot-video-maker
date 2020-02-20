@@ -2,13 +2,13 @@ const algorithmia = require('algorithmia')
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
 const sentenceBoundaryDetection = require('sbd')
 
-const watsonApiKey = require('../credentials/watson-nlu.json').apiKey
-const NaturalLanguageUnderstandingV1 = require('@ibm-watson/natural-language-understanding-nodejs')
 
 async function robot(content) {
 	await fetchContentFromWikipedia(content)
 	senitizeContent(content)
 	breakContentIntoSentences(content)
+	limitMaximumSentences(content)
+	await fetchKeywordsOfAllSentences(content)
 
 	async function fetchContentFromWikipedia(content) {
 		const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)
@@ -42,6 +42,15 @@ async function robot(content) {
 		return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g,' ')
 	}
 
+	async function fetchKeywordsOfAllSentences(content) {
+	    for (const sentence of content.sentences) {
+	      var firstword =  sentence.text.replace(/ .*/, '')
+	      sentence.keywords.push(firstword)
+	      sentence.keywords.push(firstword)
+	    }
+    }
+
+
 	function breakContentIntoSentences(content) {
 		content.sentences = []
 
@@ -53,6 +62,10 @@ async function robot(content) {
 				images: []
 			})
 		})
+	}
+
+	function limitMaximumSentences(content) {
+		content.sentences = content.sentences.slice(0, content.maximumSentences)
 	}
 
 }
